@@ -56,7 +56,7 @@ digraph brainstorming {
 }
 ```
 
-**The terminal state is a committed design document.** What happens next with that document is up to the user and their workflow.
+**The terminal state is a committed design document.** What happens next with that document depends on the project's workflow.
 
 ## The Process
 
@@ -65,6 +65,11 @@ digraph brainstorming {
 Before asking any questions, understand the current state:
 
 - Check files, docs, recent commits to understand the codebase
+- Check for existing OpenSpec context (if `openspec` command is available):
+  ```bash
+  openspec list --json
+  ```
+  This tells you if there are active changes that might be relevant.
 - Assess scope: if the request describes multiple independent subsystems, flag this immediately. Help the user decompose into sub-projects, each getting its own design cycle.
 
 ### 2. Ask Clarifying Questions
@@ -104,7 +109,15 @@ Before asking any questions, understand the current state:
 
 After the design is approved through section-by-section review, write it to a file and commit.
 
-**Output path:** Determine the appropriate path based on project context. Ask the user if unsure. The document MUST follow this structure:
+**Output path:** Determine based on project context:
+
+- **If OpenSpec is available** (`openspec` command exists and `openspec/changes/` directory exists):
+  Write to `openspec/changes/<name>/brainstorm-spec.md`, where `<name>` is the change directory name. If no change directory exists yet, create one with `openspec new change "<name>"` first.
+
+- **If OpenSpec is not available**:
+  Write to a user-specified or conventional path. Ask the user if unsure.
+
+The document MUST follow this structure:
 
 ```markdown
 ## Context

@@ -1,13 +1,13 @@
 ---
 name: myspec-br
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation. Produces a design document that feeds into opsx:propose."
+description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation. Produces a design document as output."
 ---
 
 # Brainstorming Ideas Into Designs
 
 Turn ideas into fully formed designs through natural collaborative dialogue.
 
-Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what the user is building, present the design and get approval. The terminal product is a `design.md` document that feeds into `opsx:propose`.
+Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what the user is building, present the design and get approval. The terminal product is a design document.
 
 <HARD-GATE>
 Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
@@ -21,14 +21,13 @@ Every project goes through this process. A todo list, a single-function utility,
 
 You MUST create a task for each of these items and complete them in order:
 
-1. **Explore project context** — check files, docs, recent commits, existing OpenSpec changes
+1. **Explore project context** — check files, docs, recent commits
 2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation
 4. **Present design** — in sections scaled to their complexity, get user approval after each section
-5. **Write design doc** — save to `docs/myspec/specs/YYYY-MM-DD-<topic>-design.md` and commit
+5. **Write design doc** — save the design document and commit
 6. **Design self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 7. **User reviews written design** — ask user to review the design file before proceeding
-8. **Hand off to opsx:propose** — inform user the design is ready for proposal creation
 
 ## Process Flow
 
@@ -42,7 +41,7 @@ digraph brainstorming {
     "Write design doc" [shape=box];
     "Design self-review\n(fix inline)" [shape=box];
     "User reviews design?" [shape=diamond];
-    "Hand off to opsx:propose" [shape=doublecircle];
+    "Design complete" [shape=doublecircle];
 
     "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
@@ -53,11 +52,11 @@ digraph brainstorming {
     "Write design doc" -> "Design self-review\n(fix inline)";
     "Design self-review\n(fix inline)" -> "User reviews design?";
     "User reviews design?" -> "Write design doc" [label="changes requested"];
-    "User reviews design?" -> "Hand off to opsx:propose" [label="approved"];
+    "User reviews design?" -> "Design complete" [label="approved"];
 }
 ```
 
-**The terminal state is handing off to opsx:propose.** Do NOT invoke any implementation skill. The ONLY next step is `opsx:propose` (or `opsx:new` + `opsx:ff`).
+**The terminal state is a committed design document.** What happens next with that document is up to the user and their workflow.
 
 ## The Process
 
@@ -66,16 +65,7 @@ digraph brainstorming {
 Before asking any questions, understand the current state:
 
 - Check files, docs, recent commits to understand the codebase
-- Check for existing OpenSpec context:
-  ```bash
-  openspec list --json
-  ```
-  This tells you if there are active changes that might be relevant.
-- If a relevant change exists, read its artifacts for context:
-  ```bash
-  openspec status --change "<name>" --json
-  ```
-- Assess scope: if the request describes multiple independent subsystems, flag this immediately. Help the user decompose into sub-projects, each getting its own design → propose → apply cycle.
+- Assess scope: if the request describes multiple independent subsystems, flag this immediately. Help the user decompose into sub-projects, each getting its own design cycle.
 
 ### 2. Ask Clarifying Questions
 
@@ -112,13 +102,9 @@ Before asking any questions, understand the current state:
 
 ### 5. Write the Design Document
 
-After the design is approved through section-by-section review, write it to:
+After the design is approved through section-by-section review, write it to a file and commit.
 
-```
-docs/myspec/specs/YYYY-MM-DD-<topic>-design.md
-```
-
-The design document MUST follow this structure (compatible with OpenSpec's design.md format):
+**Output path:** Determine the appropriate path based on project context. Ask the user if unsure. The document MUST follow this structure:
 
 ```markdown
 ## Context
@@ -152,7 +138,7 @@ After writing the design document, look at it with fresh eyes:
 
 1. **Placeholder scan:** Any "TBD", "TODO", incomplete sections, or vague requirements? Fix them.
 2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
-3. **Scope check:** Is this focused enough for a single proposal, or does it need decomposition?
+3. **Scope check:** Is this focused enough for a single implementation, or does it need decomposition?
 4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
 
 Fix any issues inline. No need to re-review — just fix and move on.
@@ -161,17 +147,9 @@ Fix any issues inline. No need to re-review — just fix and move on.
 
 After the design review loop passes, ask the user to review the written design before proceeding:
 
-> "Design written and committed to `<path>`. Please review it and let me know if you want to make any changes before we move to creating the proposal."
+> "Design written and committed to `<path>`. Please review it and let me know if you want to make any changes."
 
 Wait for the user's response. If they request changes, make them and re-run the design review loop. Only proceed once the user approves.
-
-### 8. Hand Off to opsx:propose
-
-Once the user approves the design, inform them:
-
-> "Design is ready. You can now run `/opsx:propose` to create the change proposal with all artifacts. The design document at `<path>` will serve as the foundation for the proposal and design artifacts."
-
-Do NOT invoke `opsx:propose` yourself — the user decides when to proceed.
 
 ## Red Flags: Excuses to Skip This Process
 

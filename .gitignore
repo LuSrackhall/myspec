@@ -1,0 +1,28 @@
+# Go build output
+myspec
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go test coverage
+*.out
+coverage.html
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Registry (user-specific)
+registry.json

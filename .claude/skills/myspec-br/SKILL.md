@@ -25,9 +25,11 @@ You MUST create a task for each of these items and complete them in order:
 2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation
 4. **Present design** — in sections scaled to their complexity, get user approval after each section
-5. **Write design doc** — save the design document and commit
-6. **Design self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-7. **User reviews written design** — ask user to review the design file before proceeding
+5. **User approves design** — confirmed through section-by-section review
+6. **Design self-review** — quick inline check for placeholders, contradictions, ambiguity, scope
+7. **User reviews design** — ask user to review the final design before proceeding
+8. **Write and commit design doc** — see output path logic below
+9. **Inform user of next steps** — tell user how to proceed with implementation
 
 ## Process Flow
 
@@ -38,25 +40,25 @@ digraph brainstorming {
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
-    "Write design doc" [shape=box];
-    "Design self-review\n(fix inline)" [shape=box];
+    "Design self-review" [shape=box];
     "User reviews design?" [shape=diamond];
-    "Design complete" [shape=doublecircle];
+    "Write and commit design doc" [shape=box];
+    "Inform user of next steps" [shape=doublecircle];
 
     "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
-    "Write design doc" -> "Design self-review\n(fix inline)";
-    "Design self-review\n(fix inline)" -> "User reviews design?";
-    "User reviews design?" -> "Write design doc" [label="changes requested"];
-    "User reviews design?" -> "Design complete" [label="approved"];
+    "User approves design?" -> "Design self-review" [label="yes"];
+    "Design self-review" -> "User reviews design?";
+    "User reviews design?" -> "Design self-review" [label="changes requested"];
+    "User reviews design?" -> "Write and commit design doc" [label="approved"];
+    "Write and commit design doc" -> "Inform user of next steps";
 }
 ```
 
-**The terminal state is a committed design document.** What happens next with that document depends on the project's workflow.
+**The terminal state is a committed design document plus a clear instruction for what to do next.**
 
 ## The Process
 
@@ -65,11 +67,6 @@ digraph brainstorming {
 Before asking any questions, understand the current state:
 
 - Check files, docs, recent commits to understand the codebase
-- Check for existing OpenSpec context (if `openspec` command is available):
-  ```bash
-  openspec list --json
-  ```
-  This tells you if there are active changes that might be relevant.
 - Assess scope: if the request describes multiple independent subsystems, flag this immediately. Help the user decompose into sub-projects, each getting its own design cycle.
 
 ### 2. Ask Clarifying Questions
@@ -105,17 +102,32 @@ Before asking any questions, understand the current state:
 - Where existing code has problems that affect the work, include targeted improvements as part of the design.
 - Don't propose unrelated refactoring. Stay focused on what serves the current goal.
 
-### 5. Write the Design Document
+### 5. User Approves Design
 
-After the design is approved through section-by-section review, write it to a file and commit.
+Design is approved through section-by-section review. Each section gets explicit user confirmation before moving to the next.
 
-**Output path:** Determine based on project context:
+### 6. Design Self-Review
 
-- **If OpenSpec is available** (`openspec` command exists and `openspec/changes/` directory exists):
-  Write to `openspec/changes/<name>/brainstorm-spec.md`, where `<name>` is the change directory name. If no change directory exists yet, create one with `openspec new change "<name>"` first.
+After the user approves the design, look at it with fresh eyes:
 
-- **If OpenSpec is not available**:
-  Write to a user-specified or conventional path. Ask the user if unsure.
+1. **Placeholder scan:** Any "TBD", "TODO", incomplete sections, or vague requirements? Fix them.
+2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
+3. **Scope check:** Is this focused enough for a single implementation, or does it need decomposition?
+4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
+
+Fix any issues inline. No need to re-review — just fix and move on.
+
+### 7. User Reviews Design
+
+After the self-review passes, ask the user to review the final design:
+
+> "Design is ready. Please review the full design above and let me know if you want to make any changes before I write it to a file."
+
+Wait for the user's response. If they request changes, make them and re-run the self-review. Only proceed once the user approves.
+
+### 8. Write and Commit Design Document
+
+After the user approves, write the design to a file and commit.
 
 The document MUST follow this structure:
 
@@ -143,26 +155,35 @@ The document MUST follow this structure:
 <!-- Format: [Risk] → Mitigation -->
 ```
 
-Commit the design document to git.
+**Output path and worktree decision:**
 
-### 6. Design Self-Review
+Ask the user: **"是否创建工作树隔离这次变更？"**
 
-After writing the design document, look at it with fresh eyes:
+- **如果用户选择创建工作树：**
+  1. 从设计内容中派生一个 kebab-case 变更名（如 `add-user-auth`）
+  2. 调用 `myspec-gwt` 技能创建工作树（传入变更名）
+  3. 工作树创建成功后，**cd 到工作树目录**
+  4. 在工作树中运行 `openspec new change "<name>"`
+  5. 将设计文档写入 `openspec/changes/<name>/brainstorm-spec.md`
+  6. 提交文件
 
-1. **Placeholder scan:** Any "TBD", "TODO", incomplete sections, or vague requirements? Fix them.
-2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
-3. **Scope check:** Is this focused enough for a single implementation, or does it need decomposition?
-4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
+- **如果用户选择不创建工作树：**
+  1. 运行 `openspec new change "<name>"`
+  2. 将设计文档写入 `openspec/changes/<name>/brainstorm-spec.md`
+  3. 提交文件
+  4. 警告用户："变更目录在 main 上，废弃时需要手动清理。"
 
-Fix any issues inline. No need to re-review — just fix and move on.
+### 9. Inform User of Next Steps
 
-### 7. User Review Gate
+设计文档已提交。根据项目配置告知用户下一步：
 
-After the design review loop passes, ask the user to review the written design before proceeding:
+**如果使用 myspec-driven schema：**
+> "设计文档已写入 `<path>`。运行 `/opsx:propose` 或 `/opsx:ff` 生成实施 artifact。如果 openspec 提示 'change 已存在'，选择继续已有 change。"
 
-> "Design written and committed to `<path>`. Please review it and let me know if you want to make any changes."
+**如果使用其他 schema 或无 schema：**
+> "设计文档已写入 `<path>`。请根据项目工作流继续。"
 
-Wait for the user's response. If they request changes, make them and re-run the design review loop. Only proceed once the user approves.
+**不自动调用 propose。** 用户自行决定何时开始。
 
 ## Red Flags: Excuses to Skip This Process
 

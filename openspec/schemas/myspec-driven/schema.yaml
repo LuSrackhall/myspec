@@ -14,27 +14,24 @@ artifacts:
       self-review, user review gate). Single source of truth for the design phase.
     template: brainstorm-spec.md
     instruction: |
-      This artifact is produced by the myspec-br skill, NOT by opsx.
+      In the standard myspec workflow, this artifact is produced by the
+      myspec-br skill BEFORE opsx:propose runs. myspec-br conducts Socratic
+      dialogue, writes brainstorm-spec.md to this change directory, and
+      commits it. When propose reaches this artifact, the file already
+      exists and is marked complete.
 
-      The myspec-br skill performs:
-      1. Explore project context
-      2. Ask clarifying questions (one at a time, multiple choice preferred)
-      3. Propose 2-3 approaches with trade-offs and recommendation
-      4. Present design in sections, get user approval per section
-      5. Write brainstorm-spec.md to this change directory
-      6. Self-review (placeholder scan, consistency, scope, ambiguity)
-      7. User review gate
+      If brainstorm-spec.md does NOT exist when propose reaches this
+      artifact (i.e., myspec-br was not run), generate it by exploring
+      the project context, asking clarifying questions, proposing
+      approaches, and writing the approved design. Warn the user:
+      "brainstorm-spec.md was not produced by myspec-br. Quality may be
+      lower than the full Socratic dialogue process."
 
       brainstorm-spec.md MUST include these sections:
       - **Context**: Background, current state, constraints
       - **Goals / Non-Goals**: What this achieves and explicitly excludes
       - **Decisions**: Key choices with rationale, alternatives considered
       - **Risks / Trade-offs**: Known limitations, format: [Risk] -> Mitigation
-
-      This artifact is typically completed before opsx:propose is invoked.
-      If brainstorm-spec.md already exists in the change directory when
-      propose/ff reaches this artifact, mark it complete without re-running
-      the brainstorming process.
     requires: []
 
   - id: proposal

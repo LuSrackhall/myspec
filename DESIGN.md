@@ -26,13 +26,20 @@ myspec 是一个 Claude Code 工作流管理工具，用于：
 7. 用户: 运行 /opsx:propose（或 /opsx:ff）
 8. worktree: opsx:apply → opsx:verify
 9. main: 询问用户确认 → git merge
-10. main: opsx:archive
+10. main: opsx:archive → git commit
+11. main: git worktree remove（最后清理）
 ```
 
 **myspec-br 是编排器：** 它拥有脑暴上下文，决定何时创建工作树、何时创建 change 目录、何时写入文件。myspec-gwt 和 propose 是它委托的工具。
 
+**收尾流程设计：**
+- 合并后归档（merge → archive → commit → worktree remove），不是归档后合并
+- 原因：archive 的 spec sync 必须基于 main 的权威 `openspec/specs/`，worktree 的 specs 可能过时
+- archive 产生未提交的 spec 编辑和目录移动，必须在 archive 后立即 commit
+- worktree remove 是最后一步，确保 archive 成功后再清理
+
 **关键约束：**
-- 归档只在 main 分支进行
+- 归档在 main 上进行（基于权威 specs），合并后立即归档并提交
 - 合并前必须询问用户，不允许私自合并
 - 使用 git merge（非 squash），保留分支历史
 - myspec-br 不自动调用 propose，只告知用户下一步

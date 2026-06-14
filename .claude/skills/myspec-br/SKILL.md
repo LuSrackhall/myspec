@@ -180,20 +180,34 @@ Ask the user: **"是否创建工作树隔离这次变更？"**
 **如果使用 myspec-driven schema：**
 > "设计文档已写入 `<path>`。运行 `/opsx:propose` 或 `/opsx:ff` 生成实施 artifact。如果 openspec 提示 'change 已存在'，选择继续已有 change。"
 >
-> 实施和验证完成后，收尾步骤：
+> 实施和验证完成后，收尾步骤（工作树路径）：
 > ```bash
 > # 从工作树中退出，回到 main：
 > cd <repo-root>
 > git checkout main
-> # 合并分支（必须先询问用户确认）：
+> # 合并分支（必须先询问用户确认，合并冲突时帮助解决或 git merge --abort）：
 > git merge change/<name>
-> # 归档变更：
+> # 归档变更（基于 main 的权威 specs 做 delta sync）：
 > # 运行 /opsx:archive
-> # 清理工作树：
+> # 提交 archive 产生的变更（spec sync + 目录移动）：
+> git add -A && git commit -m "archive: sync specs and archive change/<name>"
+> # 确保 archive 成功后再清理工作树：
 > git worktree remove .worktrees/change/<name>
 > ```
 >
-> 废弃方案：`git worktree remove .worktrees/change/<name> && git branch -d change/<name>`，然后删除 `openspec/changes/<name>`。
+> 收尾步骤（无工作树路径）：
+> ```bash
+> # 已在 main 上，直接归档：
+> # 运行 /opsx:archive
+> git add -A && git commit -m "archive: sync specs and archive change/<name>"
+> ```
+>
+> 废弃方案：
+> ```bash
+> git worktree remove .worktrees/change/<name>
+> git branch -d change/<name>    # 未合并的分支需要 -D
+> rm -rf openspec/changes/<name>  # 仅在 main 上存在时有效
+> ```
 
 **如果使用其他 schema 或无 schema：**
 > "设计文档已写入 `<path>`。请根据项目工作流继续。"

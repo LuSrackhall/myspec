@@ -164,10 +164,11 @@ myspec check                      # 检查是否有新版本可用
 
 ## 待实现
 
-- [ ] myspec-finish SKILL.md（收尾：合并/归档/清理 worktree）
 - [ ] myspec Go 工具开发（install / update / list / uninstall / check）
 - [ ] 全局 skill 安装支持
 - [ ] 项目级覆盖机制
+
+**收尾流程：** 不需要独立技能。收尾指令内联在 myspec-br step 9 中（merge → archive → worktree remove）。详见 myspec-br SKILL.md。
 
 ## 与其他工具的职责边界
 

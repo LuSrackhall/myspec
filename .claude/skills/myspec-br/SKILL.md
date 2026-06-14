@@ -179,6 +179,21 @@ Ask the user: **"是否创建工作树隔离这次变更？"**
 
 **如果使用 myspec-driven schema：**
 > "设计文档已写入 `<path>`。运行 `/opsx:propose` 或 `/opsx:ff` 生成实施 artifact。如果 openspec 提示 'change 已存在'，选择继续已有 change。"
+>
+> 实施和验证完成后，收尾步骤：
+> ```bash
+> # 从工作树中退出，回到 main：
+> cd <repo-root>
+> git checkout main
+> # 合并分支（必须先询问用户确认）：
+> git merge change/<name>
+> # 归档变更：
+> # 运行 /opsx:archive
+> # 清理工作树：
+> git worktree remove .worktrees/change/<name>
+> ```
+>
+> 废弃方案：`git worktree remove .worktrees/change/<name> && git branch -d change/<name>`，然后删除 `openspec/changes/<name>`。
 
 **如果使用其他 schema 或无 schema：**
 > "设计文档已写入 `<path>`。请根据项目工作流继续。"

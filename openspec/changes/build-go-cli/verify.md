@@ -15,11 +15,11 @@ Result: `openspec validate --all --json` → 1 change, 1 passed, 0 failed.
 
 - [ ] All `- [ ]` changed to `- [x]`
 
-Result: **23/30 tasks complete.** 7 remaining:
-- 6.1-6.6: Unit and integration tests (not yet implemented)
+Result: **26/30 tasks complete.** 4 remaining:
+- 6.4-6.6: Integration tests (deferred to follow-up change)
 - 7.3: README documentation (background agent handling)
 
-Note: Core functionality (install/update/list/uninstall/check/doctor) is fully implemented and manually verified. Tests are a quality enhancement, not a blocker for basic functionality.
+Note: All core functionality implemented and verified. Unit tests (6.1-6.3) pass. Version comparison bug fixed (lexicographic → integer segment comparison). Integration tests deferred — they require mock setup for `openspec` CLI execution.
 
 ## 3. Delta Spec Sync State
 

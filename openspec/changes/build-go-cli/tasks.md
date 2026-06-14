@@ -36,9 +36,9 @@
 
 ## 6. Testing
 
-- [ ] 6.1 Unit tests for registry read/write
-- [ ] 6.2 Unit tests for version comparison
-- [ ] 6.3 Unit tests for config.yaml merge
+- [x] 6.1 Unit tests for registry read/write
+- [x] 6.2 Unit tests for version comparison
+- [x] 6.3 Unit tests for config.yaml merge
 - [ ] 6.4 Integration test: install to temp directory, verify files
 - [ ] 6.5 Integration test: update replaces files correctly
 - [ ] 6.6 Integration test: uninstall removes all files

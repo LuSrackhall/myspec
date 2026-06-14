@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -31,7 +32,9 @@ func CheckVersion(installedVersion, expectedVersion string) (match bool, warning
 		return true, ""
 	}
 
-	if installedVersion > expectedVersion {
+	cmp := compareVersions(installedVersion, expectedVersion)
+
+	if cmp > 0 {
 		return false, fmt.Sprintf(
 			"Warning: myspec was tested with OpenSpec %s, but you have %s.\n"+
 				"Skills may work correctly. If you experience issues, run:\n"+
@@ -46,6 +49,30 @@ func CheckVersion(installedVersion, expectedVersion string) (match bool, warning
 			"  npm install -g @fission-ai/openspec@%s",
 		expectedVersion, installedVersion, expectedVersion,
 	)
+}
+
+// compareVersions compares two semver-like version strings.
+// Returns: positive if a > b, negative if a < b, 0 if equal.
+func compareVersions(a, b string) int {
+	aParts := strings.Split(a, ".")
+	bParts := strings.Split(b, ".")
+	maxLen := len(aParts)
+	if len(bParts) > maxLen {
+		maxLen = len(bParts)
+	}
+	for i := 0; i < maxLen; i++ {
+		var aNum, bNum int
+		if i < len(aParts) {
+			aNum, _ = strconv.Atoi(aParts[i])
+		}
+		if i < len(bParts) {
+			bNum, _ = strconv.Atoi(bParts[i])
+		}
+		if aNum != bNum {
+			return aNum - bNum
+		}
+	}
+	return 0
 }
 
 // InitProject runs `openspec init --tools claude` in the given directory.
@@ -80,11 +107,14 @@ func SetSchema(projectPath, schemaName string) error {
 
 	content := string(data)
 
-	// Replace existing schema line
+	// Replace existing schema line (skip comments)
 	lines := strings.Split(content, "\n")
 	found := false
 	for i, line := range lines {
 		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "#") {
+			continue
+		}
 		if strings.HasPrefix(trimmed, "schema:") {
 			lines[i] = "schema: " + schemaName
 			found = true

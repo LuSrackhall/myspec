@@ -148,7 +148,7 @@ myspec/
 
 ```bash
 # Install (recommended) — requires only Go, no clone needed
-go install github.com/LuSrackhalllu/myspec@latest
+go install github.com/LuSrackhall/myspec@latest
 
 # Verify installation
 myspec --version
@@ -159,7 +159,7 @@ The binary is placed in `$GOPATH/bin` (or `$HOME/go/bin`). Ensure this directory
 ### Build from source
 
 ```bash
-git clone https://github.com/LuSrackhalllu/myspec.git
+git clone https://github.com/LuSrackhall/myspec.git
 cd myspec
 go build -o myspec .
 ```

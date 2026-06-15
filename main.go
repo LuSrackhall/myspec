@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/LuSrackhalllu/myspec/internal/emb"
-	"github.com/LuSrackhalllu/myspec/internal/openspec"
-	"github.com/LuSrackhalllu/myspec/internal/registry"
+	"github.com/LuSrackhall/myspec/internal/emb"
+	"github.com/LuSrackhall/myspec/internal/openspec"
+	"github.com/LuSrackhall/myspec/internal/registry"
 )
 
 //go:embed all:embed

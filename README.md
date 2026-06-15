@@ -154,7 +154,32 @@ go install github.com/LuSrackhall/myspec@latest
 myspec --version
 ```
 
-The binary is placed in `$GOPATH/bin` (or `$HOME/go/bin`). Ensure this directory is in your `PATH`.
+The binary is placed in `$GOPATH/bin` (or `$HOME/go/bin`).
+
+**If `myspec` command is not found**, add Go's bin directory to your PATH:
+
+```bash
+# zsh (macOS default)
+echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.zshrc && source ~/.zshrc
+
+# bash
+echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.bashrc && source ~/.bashrc
+```
+
+### Quick Start
+
+```bash
+# 1. Install myspec
+go install github.com/LuSrackhall/myspec@latest
+
+# 2. Install skills to your project
+myspec install /path/to/your/project
+
+# 3. Verify everything works
+myspec doctor
+```
+
+`myspec install` automatically detects OpenSpec CLI and initializes it if needed. It copies skill files (`myspec-br`, `myspec-gwt`) and the `myspec-driven` schema into your project.
 
 ### Build from source
 

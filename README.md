@@ -144,13 +144,30 @@ myspec/
 
 ## Installation
 
-The Go CLI is not yet built. Once available:
+**Prerequisites:** Go 1.21+ installed ([download](https://go.dev/dl/))
 
 ```bash
-# Build from source
-go build -o myspec .
+# Install (recommended) — requires only Go, no clone needed
+go install github.com/LuSrackhalllu/myspec@latest
 
-# Install skills to a project
+# Verify installation
+myspec --version
+```
+
+The binary is placed in `$GOPATH/bin` (or `$HOME/go/bin`). Ensure this directory is in your `PATH`.
+
+### Build from source
+
+```bash
+git clone https://github.com/LuSrackhalllu/myspec.git
+cd myspec
+go build -o myspec .
+```
+
+### Usage
+
+```bash
+# Install skills to a project (auto-detects OpenSpec, auto-initializes if needed)
 myspec install /path/to/project
 
 # Update all installed projects
@@ -167,6 +184,9 @@ myspec uninstall /path/to/project
 
 # Check for available updates
 myspec check
+
+# Diagnose OpenSpec compatibility
+myspec doctor
 ```
 
 Installation copies skill files into the target project's `.claude/skills/` directory (no symlinks), making them git-trackable and self-contained.

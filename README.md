@@ -223,6 +223,48 @@ The registry of installed projects is stored at `~/.config/myspec/registry.json`
 - **OpenSpec**: myspec uses OpenSpec for spec-driven change management and provides a custom schema. It does not modify any OpenSpec built-in schemas or skills.
 - **Superpowers**: myspec-br borrows brainstorming methodology (Socratic dialogue, HARD-GATE, section-by-section approval) from the Superpowers project. No code or API dependency.
 
+## Adopting myspec in Existing Projects
+
+### New project (no OpenSpec)
+
+```bash
+myspec install /path/to/project
+```
+
+Creates OpenSpec structure, installs skills and schema. Start with `/myspec-br`.
+
+### Existing OpenSpec project (using `spec-driven`)
+
+```bash
+myspec install /path/to/project
+```
+
+**What changes:** Default schema switches to `myspec-driven` for new changes. Existing changes are unaffected (each change records its own schema).
+
+**What you get:** `/myspec-br` for structured brainstorming, `myspec-gwt` for worktree creation, and `verify` artifact for post-implementation checks.
+
+**Risk:** Low. Old changes continue using `spec-driven`. New changes use `myspec-driven`.
+
+### Existing project using Superpowers
+
+**Caution.** myspec-br and `superpowers:brainstorming` overlap. Both appear in `.claude/skills/`.
+
+**Options:**
+1. **Use both side by side** — manually choose `/myspec-br` or `/superpowers:brainstorming` per feature
+2. **Replace superpowers brainstorming** — uninstall superpowers plugin, use myspec-br instead
+3. **Keep superpowers, skip myspec** — if you use the full superpowers pipeline (brainstorming → writing-plans → subagent-driven-development → finishing), myspec adds no value
+
+**Do not switch schema** if using `superpowers-bridge`. The DAG structures differ (superpowers-bridge includes `plan`, `retrospective`; myspec-driven includes `verify`).
+
+### Summary
+
+| Scenario | Install skills? | Switch schema? |
+|---|---|---|
+| New project | Yes | Yes (default) |
+| Existing spec-driven | Yes | Yes (safe) |
+| Existing superpowers-bridge | Optional | No |
+| Using full superpowers pipeline | No | No |
+
 ## Design Decisions
 
 See [DESIGN.md](DESIGN.md) for all design decisions, including:

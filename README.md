@@ -144,14 +144,42 @@ myspec/
 
 ## Installation
 
+### Download binary (recommended)
+
+Download the latest binary for your platform from [GitHub Releases](https://github.com/LuSrackhall/myspec/releases):
+
+| Platform | File |
+|----------|------|
+| macOS (Intel) | `myspec-darwin-amd64` |
+| macOS (Apple Silicon) | `myspec-darwin-arm64` |
+| Linux (x86_64) | `myspec-linux-amd64` |
+| Linux (ARM64) | `myspec-linux-arm64` |
+| Windows (x86_64) | `myspec-windows-amd64.exe` |
+| Windows (ARM64) | `myspec-windows-arm64.exe` |
+
+```bash
+# macOS / Linux: rename and add to PATH
+mv myspec-<os>-<arch> myspec
+chmod +x myspec
+sudo mv myspec /usr/local/bin/
+
+# Windows: move to a directory in your PATH
+# e.g., C:\Users\<you>\bin\myspec.exe
+```
+
+### Install via Go
+
 **Prerequisites:** Go 1.21+ installed ([download](https://go.dev/dl/))
 
 ```bash
-# Install (recommended) — requires only Go, no clone needed
 go install github.com/LuSrackhall/myspec@latest
+```
 
-# Verify installation
-myspec --version
+**Note for users in China:** If `go install` times out, configure the Go proxy:
+
+```bash
+go env -w GOPROXY=https://goproxy.cn,direct GONOSUMDB=*
+go install github.com/LuSrackhall/myspec@latest
 ```
 
 The binary is placed in `$GOPATH/bin` (or `$HOME/go/bin`).
@@ -164,7 +192,14 @@ echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.zshrc && source ~/.zshrc
 
 # bash
 echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.bashrc && source ~/.bashrc
+
+# Windows (PowerShell)
+[Environment]::SetEnvironmentVariable("Path", "$env:Path;$(go env GOPATH)\bin", "User")
 ```
+
+### Windows Note
+
+myspec-gwt (worktree creation) uses bash shell commands. On Windows, use **Git Bash**, **WSL**, or **MSYS2**. The Go CLI itself runs natively on Windows.
 
 ### Quick Start
 
@@ -216,7 +251,7 @@ myspec doctor
 
 Installation copies skill files into the target project's `.claude/skills/` directory (no symlinks), making them git-trackable and self-contained.
 
-The registry of installed projects is stored at `~/.config/myspec/registry.json`.
+The registry of installed projects is stored at `~/.config/myspec/registry.json` (all platforms).
 
 ## Relationship to Other Tools
 
@@ -282,9 +317,11 @@ Completed:
 - myspec-gwt skill (worktree creation)
 - myspec-driven custom schema with 6 artifact DAG
 - Schema template files (6 templates)
+- Go CLI (install / update / list / uninstall / check / doctor)
+- Workflow enforcement (HARD-GATE, user acceptance, iteration loop)
+- Multi-platform binary releases (macOS, Linux, Windows)
 
 Planned:
-- Go CLI development (install / update / list / uninstall / check)
 - Global skill installation support
 - Project-level override mechanism
 

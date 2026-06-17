@@ -57,7 +57,28 @@ Sync the worktree with the latest main branch, let the user choose a merge metho
 
    **IMPORTANT:** All main branch operations (pull, push) MUST be confirmed by the user. Never execute main branch operations without explicit user approval.
 
-3. **Phase 2: Merge method selection**
+3. **Phase 1.5: Post-sync validation**
+
+   After syncing main into the worktree (or if already in sync), validate that the implementation still works:
+
+   a. **Detect the project's test command:**
+   - Check for common test files: `go.mod` → `go test ./...`, `package.json` → `npm test`, `Makefile` → `make test`
+   - If no test command is found, skip testing and proceed with a note: "No test command detected. Skipping post-sync validation."
+
+   b. **Run tests:**
+   ```bash
+   <test command>
+   ```
+
+   c. **If tests FAIL:**
+   > "Post-sync validation failed. The baseline update may have introduced issues."
+   > Show the test failure output.
+   > **Do NOT proceed to merge.** The user must fix the issues first.
+
+   d. **If tests PASS:**
+   > "Post-sync validation passed. Ready to merge."
+
+4. **Phase 2: Merge method selection**
 
    Present three merge methods using AskUserQuestion:
 

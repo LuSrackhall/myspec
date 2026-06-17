@@ -89,6 +89,38 @@ Git worktree creation for change isolation. Handles:
 - Ensuring `.worktrees/` is gitignored
 - Fallback to in-place work if worktree creation fails
 
+### myspec-apply
+
+**Location:** `.claude/skills/myspec-apply/SKILL.md`
+
+Wraps OpenSpec's apply workflow with automatic git commits per task group. Handles:
+
+- Implementing tasks by group with automatic conventional commits
+- Using the user's preferred language for commit messages
+- Prompting for verification after all tasks are complete
+
+### myspec-verify
+
+**Location:** `.claude/skills/myspec-verify/SKILL.md`
+
+Wraps OpenSpec's verify workflow with user acceptance and iteration. Handles:
+
+- Document verification (Completeness/Correctness/Coherence)
+- User acceptance checkpoint (must explicitly confirm)
+- Iteration decision loop when user is not satisfied
+- Backfilling all artifacts to match final implementation
+
+### myspec-merge
+
+**Location:** `.claude/skills/myspec-merge/SKILL.md`
+
+Handles the complete post-verification merge workflow. Handles:
+
+- Main branch sync check (local vs origin, user decides)
+- Post-sync re-verification via myspec-verify
+- Merge method selection (merge commit / squash / rebase)
+- Archive and worktree cleanup
+
 ## Custom Schema: myspec-driven
 
 **Location:** `openspec/schemas/myspec-driven/`
@@ -214,7 +246,7 @@ myspec install /path/to/your/project
 myspec doctor
 ```
 
-`myspec install` automatically detects OpenSpec CLI and initializes it if needed. It copies skill files (`myspec-br`, `myspec-gwt`) and the `myspec-driven` schema into your project.
+`myspec install` automatically detects OpenSpec CLI and initializes it if needed. It copies skill files (`myspec-br`, `myspec-gwt`, `myspec-apply`, `myspec-verify`, `myspec-merge`) and the `myspec-driven` schema into your project.
 
 ### Build from source
 
@@ -230,11 +262,8 @@ go build -o myspec .
 # Install skills to a project (auto-detects OpenSpec, auto-initializes if needed)
 myspec install /path/to/project
 
-# Update all installed projects
+# Update myspec files in current directory
 myspec update
-
-# Update a specific project
-myspec update /path/to/project
 
 # List installed projects and versions
 myspec list
@@ -276,7 +305,7 @@ myspec install /path/to/project
 
 **What changes:** Default schema switches to `myspec-driven` for new changes. Existing changes are unaffected (each change records its own schema).
 
-**What you get:** `/myspec-br` for structured brainstorming, `myspec-gwt` for worktree creation, and `verify` artifact for post-implementation checks.
+**What you get:** `myspec-br` for structured brainstorming, `myspec-gwt` for worktree creation, `myspec-apply` for task implementation with auto-commits, `myspec-verify` for user acceptance, `myspec-merge` for merge orchestration.
 
 **Risk:** Low. Old changes continue using `spec-driven`. New changes use `myspec-driven`.
 
@@ -315,10 +344,13 @@ See [DESIGN.md](DESIGN.md) for all design decisions, including:
 Completed:
 - myspec-br skill (brainstorming orchestrator)
 - myspec-gwt skill (worktree creation)
+- myspec-apply skill (task implementation with auto-commits)
+- myspec-verify skill (user acceptance + iteration)
+- myspec-merge skill (main sync + merge method + archive cleanup)
 - myspec-driven custom schema with 6 artifact DAG
 - Schema template files (6 templates)
 - Go CLI (install / update / list / uninstall / check / doctor)
-- Workflow enforcement (HARD-GATE, user acceptance, iteration loop)
+- Dynamic skill embedding (new skills auto-included in builds)
 - Multi-platform binary releases (macOS, Linux, Windows)
 
 Planned:

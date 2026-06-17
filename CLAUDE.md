@@ -39,6 +39,9 @@ Phase 3: 迭代
 |---|---|---|
 | myspec-br | `.claude/skills/myspec-br/SKILL.md` | 脑暴编排器（Flow D） |
 | myspec-gwt | `.claude/skills/myspec-gwt/SKILL.md` | git worktree 创建 |
+| myspec-apply | `.claude/skills/myspec-apply/SKILL.md` | 任务实施 + task group 自动提交 |
+| myspec-verify | `.claude/skills/myspec-verify/SKILL.md` | 文档验证 + 用户验收 + 迭代决策 |
+| myspec-merge | `.claude/skills/myspec-merge/SKILL.md` | main 同步 + 合并方式选择 + 归档清理 |
 
 ## 自定义 Schema
 

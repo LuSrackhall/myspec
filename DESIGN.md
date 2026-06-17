@@ -24,33 +24,18 @@ myspec 是一个 Claude Code 工作流管理工具，用于：
 5. myspec-br: 写入 brainstorm-spec.md 到 change 目录，提交
 6. myspec-br: 告知用户"运行 /opsx:propose 继续"
 7. 用户: 运行 /opsx:propose（或 /opsx:ff）
-8. worktree: opsx:apply（实施任务，标记完成）
-
-   HARD-GATE: apply 完成后，必须运行 verify。禁止 build/merge/其他操作。
-
-9. worktree: opsx:verify（文档验证）
-
-   HARD-GATE: verify 完成后，必须展示变更摘要并等待用户验收。禁止 merge。
-
-10. worktree: 用户验收
-    ├─ 通过 → 继续步骤 11
-    └─ 不通过 → 进入迭代循环：
-        1. 分析问题根因
-        2. 推荐迭代策略（原地修/新开change/reset+stash/reset/废弃）
-        3. 用户选择
-        4. 执行策略
-        5. 回到步骤 8
-
-11. worktree: 反哺文档（确保 artifacts 匹配最终代码）
-12. main: 询问用户确认 → git merge
-
-    HARD-GATE: merge 后，唯一的下一步是 archive。禁止 build/test/其他。
-
-13. main: opsx:archive → git commit
-
-    HARD-GATE: archive 后，唯一的下一步是 worktree remove。
-
-14. main: git worktree remove（最后清理）
+8. worktree: myspec-apply（实施任务，每 task group 自动提交）
+9. worktree: myspec-verify（文档验证 → 用户验收 → 迭代决策）
+   ├─ 用户接受 → 反哺文档 → 继续步骤 10
+   └─ 用户不接受 → 迭代（分析 → 推荐策略 → 用户选择 → 回到步骤 8）
+10. main: myspec-merge
+    a. main 同步检查（比较本地/origin main，引导用户决策）
+    b. 在工作树中 merge main（冲突在工作树中解决）
+    c. 选择合并方式（merge commit / squash / rebase）
+    d. 执行合并（用户确认）
+    e. opsx:archive → git commit
+    f. git worktree remove + git branch -d
+```
 ```
 
 **myspec-br 是编排器：** 它拥有脑暴上下文，决定何时创建工作树、何时创建 change 目录、何时写入文件。myspec-gwt 和 propose 是它委托的工具。

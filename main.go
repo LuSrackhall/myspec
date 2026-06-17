@@ -26,7 +26,7 @@ var commands = map[string]struct {
 	help string
 }{
 	"install":   {run: cmdInstall, help: "Install skills to a project: myspec install <project-path>"},
-	"update":    {run: cmdUpdate, help: "Update installed skills: myspec update [project-path]"},
+	"update":    {run: cmdUpdate, help: "Update myspec files in current directory: myspec update"},
 	"list":      {run: cmdList, help: "List installed projects: myspec list"},
 	"uninstall": {run: cmdUninstall, help: "Uninstall skills: myspec uninstall <project-path>"},
 	"check":     {run: cmdCheck, help: "Check for outdated versions: myspec check"},
@@ -149,10 +149,11 @@ func cmdInstall(args []string) {
 		os.Exit(1)
 	}
 
+	skills, _ := emb.ListSkills(embedFS)
 	r.Set(projectPath, registry.Entry{
 		Version:     version,
 		InstalledAt: time.Now().UTC(),
-		Skills:      []string{"myspec-br", "myspec-gwt"},
+		Skills:      skills,
 		Schema:      "myspec-driven",
 	})
 
@@ -162,7 +163,7 @@ func cmdInstall(args []string) {
 	}
 
 	fmt.Printf("Installed myspec skills to %s\n", projectPath)
-	fmt.Printf("  Skills: myspec-br, myspec-gwt\n")
+	fmt.Printf("  Skills: %s\n", strings.Join(skills, ", "))
 	fmt.Printf("  Schema: myspec-driven\n")
 	fmt.Printf("  Version: %s\n", version)
 }
@@ -174,40 +175,43 @@ func cmdUpdate(args []string) {
 		os.Exit(1)
 	}
 
-	paths := []string{}
-	if len(args) > 0 {
-		p, _ := filepath.Abs(args[0])
-		paths = []string{p}
-	} else {
-		for p := range r.Installed {
-			paths = append(paths, p)
-		}
+	projectPath, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: cannot determine current directory: %v\n", err)
+		os.Exit(1)
 	}
 
-	if len(paths) == 0 {
-		fmt.Println("No projects to update.")
-		return
+	if _, ok := r.Get(projectPath); !ok {
+		fmt.Fprintf(os.Stderr, "Current directory is not a myspec project: %s\n", projectPath)
+		fmt.Fprintln(os.Stderr, "Run 'myspec install <path>' first.")
+		os.Exit(1)
 	}
 
-	for _, p := range paths {
-		if err := emb.CopySkills(embedFS, p); err != nil {
-			fmt.Fprintf(os.Stderr, "Error updating %s: %v\n", p, err)
-			continue
-		}
-		if err := emb.CopySchema(embedFS, p); err != nil {
-			fmt.Fprintf(os.Stderr, "Error updating schema in %s: %v\n", p, err)
-			continue
-		}
-		r.Set(p, registry.Entry{
-			Version:     version,
-			InstalledAt: time.Now().UTC(),
-			Skills:      []string{"myspec-br", "myspec-gwt"},
-			Schema:      "myspec-driven",
-		})
-		fmt.Printf("Updated: %s\n", p)
+	if err := emb.CopySkills(embedFS, projectPath); err != nil {
+		fmt.Fprintf(os.Stderr, "Error updating skills: %v\n", err)
+		os.Exit(1)
+	}
+	if err := emb.CopySchema(embedFS, projectPath); err != nil {
+		fmt.Fprintf(os.Stderr, "Error updating schema: %v\n", err)
+		os.Exit(1)
 	}
 
-	r.Save()
+	skills, _ := emb.ListSkills(embedFS)
+	r.Set(projectPath, registry.Entry{
+		Version:     version,
+		InstalledAt: time.Now().UTC(),
+		Skills:      skills,
+		Schema:      "myspec-driven",
+	})
+
+	if err := r.Save(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error saving registry: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Updated: %s\n", projectPath)
+	fmt.Printf("  Skills: %s\n", strings.Join(skills, ", "))
+	fmt.Printf("  Version: %s\n", version)
 }
 
 func cmdList(args []string) {
@@ -246,7 +250,7 @@ func cmdUninstall(args []string) {
 		os.Exit(1)
 	}
 
-	emb.RemoveSkills(projectPath)
+	emb.RemoveSkills(embedFS, projectPath)
 	emb.RemoveSchema(projectPath)
 	r.Remove(projectPath)
 	r.Save()

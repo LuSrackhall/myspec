@@ -9,9 +9,27 @@ import (
 	"path/filepath"
 )
 
+// ListSkills returns the names of all skills in the embedded skills directory.
+func ListSkills(embedFS fs.FS) ([]string, error) {
+	entries, err := fs.ReadDir(embedFS, "embed/skills")
+	if err != nil {
+		return nil, fmt.Errorf("read skills directory: %w", err)
+	}
+	var names []string
+	for _, e := range entries {
+		if e.IsDir() {
+			names = append(names, e.Name())
+		}
+	}
+	return names, nil
+}
+
 // CopySkills copies embedded skill files to the target project.
 func CopySkills(embedFS fs.FS, targetDir string) error {
-	skills := []string{"myspec-br", "myspec-gwt"}
+	skills, err := ListSkills(embedFS)
+	if err != nil {
+		return err
+	}
 	for _, name := range skills {
 		src := filepath.Join("embed", "skills", name, "SKILL.md")
 		dst := filepath.Join(targetDir, ".claude", "skills", name, "SKILL.md")
@@ -28,8 +46,12 @@ func CopySchema(embedFS embed.FS, targetDir string) error {
 }
 
 // RemoveSkills removes myspec skill files from the target project.
-func RemoveSkills(targetDir string) error {
-	for _, name := range []string{"myspec-br", "myspec-gwt"} {
+func RemoveSkills(embedFS fs.FS, targetDir string) error {
+	skills, err := ListSkills(embedFS)
+	if err != nil {
+		return err
+	}
+	for _, name := range skills {
 		os.RemoveAll(filepath.Join(targetDir, ".claude", "skills", name))
 	}
 	return nil

@@ -17,7 +17,12 @@ func TestCopySkills(t *testing.T) {
 		t.Fatalf("CopySkills() failed: %v", err)
 	}
 
-	for _, name := range []string{"myspec-br", "myspec-gwt"} {
+	skills, err := ListSkills(testFS)
+	if err != nil {
+		t.Fatalf("ListSkills() failed: %v", err)
+	}
+
+	for _, name := range skills {
 		path := filepath.Join(dir, ".claude", "skills", name, "SKILL.md")
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			t.Errorf("expected file at %s", path)
@@ -41,11 +46,12 @@ func TestRemoveSkills(t *testing.T) {
 	dir := t.TempDir()
 	CopySkills(testFS, dir)
 
-	if err := RemoveSkills(dir); err != nil {
+	if err := RemoveSkills(testFS, dir); err != nil {
 		t.Fatalf("RemoveSkills() failed: %v", err)
 	}
 
-	for _, name := range []string{"myspec-br", "myspec-gwt"} {
+	skills, _ := ListSkills(testFS)
+	for _, name := range skills {
 		path := filepath.Join(dir, ".claude", "skills", name)
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			t.Errorf("expected %s to be removed", path)

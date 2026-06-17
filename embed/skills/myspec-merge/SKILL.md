@@ -57,26 +57,21 @@ Sync the worktree with the latest main branch, let the user choose a merge metho
 
    **IMPORTANT:** All main branch operations (pull, push) MUST be confirmed by the user. Never execute main branch operations without explicit user approval.
 
-3. **Phase 1.5: Post-sync validation**
+3. **Phase 1.5: Post-sync re-verification**
 
-   After syncing main into the worktree (or if already in sync), validate that the implementation still works:
+   After syncing main into the worktree (or if already in sync), re-verify the implementation:
 
-   a. **Detect the project's test command:**
-   - Check for common test files: `go.mod` → `go test ./...`, `package.json` → `npm test`, `Makefile` → `make test`
-   - If no test command is found, skip testing and proceed with a note: "No test command detected. Skipping post-sync validation."
+   a. **Run myspec-verify skill** to re-check that the implementation still holds against the updated baseline. This includes:
+   - Document verification (Completeness/Correctness/Coherence)
+   - User acceptance (user must re-confirm after sync)
+   - Iteration if issues are found
 
-   b. **Run tests:**
-   ```bash
-   <test command>
-   ```
+   b. **If verification or user acceptance fails:**
+   > "Post-sync verification failed. Please fix issues before merging."
+   > Return to myspec-apply or myspec-verify as needed. Do NOT proceed to merge.
 
-   c. **If tests FAIL:**
-   > "Post-sync validation failed. The baseline update may have introduced issues."
-   > Show the test failure output.
-   > **Do NOT proceed to merge.** The user must fix the issues first.
-
-   d. **If tests PASS:**
-   > "Post-sync validation passed. Ready to merge."
+   c. **If verification passes and user accepts:**
+   > "Post-sync verification passed. Ready to merge."
 
 4. **Phase 2: Merge method selection**
 

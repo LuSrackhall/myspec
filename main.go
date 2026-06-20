@@ -19,7 +19,7 @@ var embedFS embed.FS
 //go:embed openspec-version.txt
 var expectedOpenSpecVersion string
 
-const version = "0.4.6"
+const version = "0.4.7"
 
 var commands = map[string]struct {
 	run  func(args []string)

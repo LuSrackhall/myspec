@@ -246,7 +246,17 @@ myspec install /path/to/your/project
 myspec doctor
 ```
 
-`myspec install` automatically detects OpenSpec CLI and initializes it if needed. It copies skill files (`myspec-br`, `myspec-gwt`, `myspec-apply`, `myspec-verify`, `myspec-merge`) and the `myspec-driven` schema into your project.
+`myspec install` automatically detects OpenSpec CLI and initializes it if needed (`openspec init --tools claude`). It copies myspec skill files and the `myspec-driven` schema into your project.
+
+**What gets installed by whom:**
+
+| Component | Installed by | Updated by |
+|-----------|-------------|-----------|
+| OpenSpec skills (openspec-apply-change, openspec-verify-change, etc.) | `openspec init --tools claude` | `npm update -g @fission-ai/openspec` |
+| myspec skills (myspec-br, myspec-apply, myspec-verify, etc.) | `myspec install` | `myspec update` |
+| myspec-driven schema | `myspec install` | `myspec update` |
+
+**Note:** `myspec update` only updates myspec skills and schema. To update OpenSpec skills, run `npm update -g @fission-ai/openspec` separately.
 
 ### Build from source
 

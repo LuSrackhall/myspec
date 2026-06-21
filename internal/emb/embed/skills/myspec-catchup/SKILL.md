@@ -38,9 +38,28 @@ Sync the worktree branch with the latest main, then re-verify that the implement
    git checkout main
    git pull origin main
    git checkout change/<name>
+   ```
+
+   Then ask the user how to sync main into the worktree branch:
+
+   | Option | Description | When to use |
+   |--------|-------------|-------------|
+   | Rebase (recommended) | Replay worktree commits on top of latest main | Keeps linear history, preferred for feature branches |
+   | Merge | Merge main into worktree branch | Preserves exact commit history, creates merge commit |
+
+   Use AskUserQuestion. Based on user choice:
+
+   **Rebase:**
+   ```bash
+   git rebase main
+   ```
+   If conflicts arise during rebase, resolve them in the worktree. Report conflicts to the user and assist with resolution.
+
+   **Merge:**
+   ```bash
    git merge main
    ```
-   If conflicts arise during `git merge main`, resolve them in the worktree. Report conflicts to the user and assist with resolution.
+   If conflicts arise during merge, resolve them in the worktree. Report conflicts to the user and assist with resolution.
 
    **If local main is ahead of origin/main:**
    > "Local main has N new commit(s) not pushed to origin. Should I push to origin?"

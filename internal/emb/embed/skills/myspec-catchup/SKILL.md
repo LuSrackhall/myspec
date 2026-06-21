@@ -16,11 +16,10 @@ Sync the worktree branch with the latest main, then run lightweight checks to co
    Verify the user is currently in a git worktree (not on main directly):
 
    ```bash
-   GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
-   GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
+   BRANCH=$(git branch --show-current)
    ```
 
-   If `GIT_DIR == GIT_COMMON` (not in a worktree):
+   If the branch is `main` or `master`:
    > "myspec-catchup must be run from a worktree. You are currently on main. Run myspec-apply first to start implementation in a worktree."
 
    Stop.
@@ -85,6 +84,8 @@ Sync the worktree branch with the latest main, then run lightweight checks to co
    git checkout change/<name>
    ```
 
+   Then also ask the user how to sync main into the worktree branch (same rebase/merge choice as above).
+
    **If in sync:**
    > "Local main and origin/main are in sync. Skipping sync step."
 
@@ -123,6 +124,6 @@ Sync the worktree branch with the latest main, then run lightweight checks to co
 - MUST be run from a worktree, not from main
 - All main branch operations (pull, push) MUST be confirmed by the user
 - Resolve merge/rebase conflicts in the worktree when possible
-- Do NOT skip post-sync validation — syncing may introduce issues
+- Do NOT skip post-sync validation when a build/test command is available — syncing may introduce issues
 - Use lightweight checks (build + test), NOT full myspec-verify
 - If called standalone, report completion and suggest myspec-merge. Do NOT proceed to merge automatically.

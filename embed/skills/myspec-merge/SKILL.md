@@ -121,7 +121,7 @@ Sync the worktree with the latest main branch, let the user choose a merge metho
 
 - All main branch operations (pull, push, merge, rebase) MUST be confirmed by the user
 - Worktree branch commits are handled automatically by the agent (conventional commit, user language/English)
-- Resolve merge conflicts in the worktree when possible (during Phase 1 sync)
+- Conflicts during sync are handled by myspec-catchup (Phase 1)
 - Do NOT skip the merge method selection. The user MUST choose.
 - Do NOT skip the archive step. It syncs delta specs to main specs.
 - Do NOT skip the cleanup step. The worktree must be removed after merge.

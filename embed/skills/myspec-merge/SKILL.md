@@ -27,8 +27,8 @@ Sync the worktree with the latest main branch, let the user choose a merge metho
    myspec-catchup handles:
    - Checking local main vs origin/main
    - Pulling/pushing with user confirmation
-   - Merging main into the worktree (resolving conflicts)
-   - Re-running myspec-verify to confirm the implementation still works
+   - Syncing main into the worktree (rebase or merge, user chooses)
+   - Running post-sync validation (build + tests)
 
    If myspec-catchup reports any issues, do NOT proceed to merge. Fix issues first.
 
